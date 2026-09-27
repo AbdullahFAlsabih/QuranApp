@@ -5,7 +5,6 @@ import speech_recognition as sr
 import flet as ft
 
 def normalize_arabic(text: str) -> str:
-    """إزالة التشكيل وتوحيد الحروف للمطابقة الإملائية الدقيقة"""
     noise = ['َ', 'ً', 'ُ', 'ٌ', 'ِ', 'ٍ', 'ْ', 'ّ', 'ـ']
     for char in noise:
         text = text.replace(char, '')
@@ -19,7 +18,6 @@ def normalize_arabic(text: str) -> str:
 
 
 def main(page: ft.Page):
-    # --- إعدادات الصفحة الرئيسية ---
     page.title = "تطبيق القرآن الكريم والتسميع"
     page.rtl = True
     page.theme_mode = ft.ThemeMode.LIGHT
@@ -27,7 +25,6 @@ def main(page: ft.Page):
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
-    # --- تحميل ملف البيانات JSON ---
     json_path = os.path.join(os.path.dirname(__file__), 'assets', 'quran.json')
     if not os.path.exists(json_path):
         json_path = 'assets/quran.json'
@@ -35,13 +32,11 @@ def main(page: ft.Page):
     with open(json_path, 'r', encoding='utf-8') as f:
         surahs = json.load(f)
 
-
     current_surah_idx = 0
     current_verse_idx = 0
     memorized_verses = set()
     is_listening = False
     is_hidden = False
-
 
     surah_title = ft.Text(size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.GREEN_800)
     verse_text = ft.Text(size=26, weight=ft.FontWeight.W_600, text_align=ft.TextAlign.CENTER)
@@ -57,7 +52,6 @@ def main(page: ft.Page):
         visible=False,
         width=360
     )
-
 
     def update_ui():
         nonlocal is_hidden
@@ -93,8 +87,7 @@ def main(page: ft.Page):
         except Exception:
             pass
 
-
-        def toggle_hide(e):
+    def toggle_hide(e):
         nonlocal is_hidden
         is_hidden = not is_hidden
         update_ui()
@@ -107,8 +100,7 @@ def main(page: ft.Page):
             memorized_verses.add(v_id)
         update_ui()
 
-
-        def listen_worker(target_text, v_id):
+    def listen_worker(target_text, v_id):
         nonlocal is_listening, is_hidden
         recognizer = sr.Recognizer()
 
@@ -181,8 +173,7 @@ def main(page: ft.Page):
 
         threading.Thread(target=listen_worker, args=(target_text, v_id), daemon=True).start()
 
-
-        def prev_verse(e=None):
+    def prev_verse(e=None):
         nonlocal current_verse_idx, is_hidden
         if current_verse_idx > 0:
             current_verse_idx -= 1
@@ -216,7 +207,6 @@ def main(page: ft.Page):
             status_card.visible = False
             update_ui()
 
-
     hide_button = ft.OutlinedButton("إخفاء", icon=ft.Icons.VISIBILITY_OFF, on_click=toggle_hide)
     save_button = ft.ElevatedButton("حفظ", icon=ft.Icons.CHECK_CIRCLE_OUTLINE, on_click=toggle_memorized)
     mic_button = ft.ElevatedButton(
@@ -249,7 +239,6 @@ def main(page: ft.Page):
         ft.Row([hide_button, save_button, mic_button], spacing=4),
         ft.IconButton(icon=ft.Icons.ARROW_BACK_IOS, on_click=next_verse, tooltip="الآية التالية"),
     ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, width=360)
-
 
     page.add(
         surah_navigation,
